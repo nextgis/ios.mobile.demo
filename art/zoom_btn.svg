@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+  <ellipse transform="matrix(1, 0.000065, -0.002344, 1, -14.512961, -14.558007)" cx="38.603" cy="38.555" rx="23.944" ry="23.998" style="fill: rgb(22, 101, 200);" bx:origin="0.36 0.349"/>
+  <line x1="11.731" y1="24.06" x2="36.269" y2="23.94" style="stroke: rgb(255, 255, 255); stroke-width: 3; stroke-linecap: round;"/>
+  <line x1="11.731" y1="24.06" x2="36.269" y2="23.94" style="stroke: rgb(255, 255, 255); stroke-width: 3; stroke-linecap: round;" transform="matrix(0, -1, 1, 0, 0, 47.999999)"/>
+</svg>

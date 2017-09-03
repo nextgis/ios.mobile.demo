@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="DRW-oR-rKv">
+    <device id="retina4_0" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--NextGIS Demo-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController title="NextGIS Demo" id="BYZ-38-t0r" customClass="ViewController" customModule="Mobile_demo" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
+                        <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <glkView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" translatesAutoresizingMaskIntoConstraints="NO" id="0yC-v6-E7c" customClass="MapView" customModule="ngmaplib">
+                                <rect key="frame" x="0.0" y="64" width="320" height="504"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="95n-Cr-m7D" userLabel="Zoom in">
+                                        <rect key="frame" x="264" y="192" width="48" height="48"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="48" id="Ris-YZ-iRN"/>
+                                            <constraint firstAttribute="height" constant="48" id="Y1E-Ze-qMq"/>
+                                        </constraints>
+                                        <state key="normal" image="zoom_in"/>
+                                        <connections>
+                                            <action selector="onZoomIn:" destination="BYZ-38-t0r" eventType="touchUpInside" id="X9k-xk-Wqf"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UOZ-1R-iql" userLabel="Zoom out">
+                                        <rect key="frame" x="264" y="264" width="48" height="48"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="48" id="vzY-s0-fqL"/>
+                                            <constraint firstAttribute="width" constant="48" id="zqA-yB-DRe"/>
+                                        </constraints>
+                                        <state key="normal" image="zoom_out"/>
+                                        <connections>
+                                            <action selector="onZoomOut:" destination="BYZ-38-t0r" eventType="touchUpInside" id="g36-L0-1TY"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="95n-Cr-m7D" firstAttribute="centerY" secondItem="0yC-v6-E7c" secondAttribute="centerY" constant="-36" id="8IT-Si-Uon"/>
+                                    <constraint firstAttribute="trailingMargin" secondItem="UOZ-1R-iql" secondAttribute="trailing" id="8RH-10-ktp"/>
+                                    <constraint firstItem="UOZ-1R-iql" firstAttribute="centerY" secondItem="0yC-v6-E7c" secondAttribute="centerY" constant="36" id="WWX-mP-lHv"/>
+                                    <constraint firstAttribute="trailingMargin" secondItem="95n-Cr-m7D" secondAttribute="trailing" id="Ytn-KE-1at"/>
+                                </constraints>
+                            </glkView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="0yC-v6-E7c" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="0QS-vz-5gF"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="0yC-v6-E7c" secondAttribute="bottom" id="3TF-eE-r4W"/>
+                            <constraint firstItem="0yC-v6-E7c" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="-16" id="HDJ-0q-5ef"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="0yC-v6-E7c" secondAttribute="trailing" constant="-16" id="qR6-xe-Ge6"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="NextGIS Demo" id="uV2-7I-wz1">
+                        <barButtonItem key="rightBarButtonItem" title="Info" id="xpg-XI-Y4F">
+                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <connections>
+                                <action selector="onInfo:" destination="BYZ-38-t0r" id="Wg9-Om-0t3"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="mapView" destination="0yC-v6-E7c" id="dHn-vW-Bl4"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="870" y="-660"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="MMG-kA-7kU">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="DRW-oR-rKv" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="6TQ-v7-jnx">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="barTintColor" red="0.086274509803921567" green="0.396078431372549" blue="0.65490196078431373" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <textAttributes key="titleTextAttributes">
+                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        </textAttributes>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="0Pv-l8-TIM"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="6hc-4O-2AV" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="22.5" y="-660.21126760563379"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="zoom_in" width="48" height="48"/>
+        <image name="zoom_out" width="48" height="48"/>
+    </resources>
+</document>
