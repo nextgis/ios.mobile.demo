@@ -14,6 +14,9 @@ class ViewController: UIViewController, GestureDelegate {
     // MARK: Properties
     
     @IBOutlet weak var mapView: MapView!
+    @IBOutlet weak var downloadBtn: UIButton!
+    let pointsURL = "https://nextgis.com/data/examples/store.ngst"
+    weak var map: Map?
     
     // MARK: Overrides
 
@@ -22,26 +25,39 @@ class ViewController: UIViewController, GestureDelegate {
         // Do any additional setup after loading the view, typically from a nib.
         
         if let map = API.instance.getMap("main") {
+            
+            let memSizeMb = ProcessInfo.processInfo.physicalMemory / 1048576
+            var reduceFactor = 1.0
+            if memSizeMb < 1024 {
+                reduceFactor = 1.5
+            }
         
             let options = [
                 "ZOOM_INCREMENT":"1", // Add extra to zoom level corresponding to scale
-                "VIEWPORT_REDUCE_FACTOR":"1.5" // Reduce viewport width and height to decrease memory usage
+                "VIEWPORT_REDUCE_FACTOR":"\(reduceFactor)" // Reduce viewport width and height to decrease memory usage
             ]
             map.setOptions(options: options)
             map.setExtentLimits(minX: -20037508.34,
                                 minY: -20037508.34,
                                 maxX: 20037508.34,
                                 maxY: 20037508.34)
-            if map.layerCount == 0 { // Map is just created                
-                addPoints(to: map)
+            if map.layerCount == 0 { // Map is just created   
+                if API.instance.getStore("store") != nil {
+                    addPoints(to: map)
+                    downloadBtn.isHidden = true
+                }
                 addOSM(to: map)
 
                 
                 _ = map.save()
+            } else if map.layerCount >= 2 {
+                downloadBtn.isHidden = true
             }
         
             mapView.setMap(map: map)
             mapView.registerGestureRecognizers(self)
+            
+            self.map = map
         }
     }
 
@@ -98,17 +114,28 @@ class ViewController: UIViewController, GestureDelegate {
         if let dataStore = API.instance.getStore("store") {
             // We expected datastore has points feature class
             if let pointsFC = dataStore.child(name: "points") {
+                // Get OSM Layer
+                let osmLayer = map.getLayer(position: 0)
+                
                 // Create layer from points feature class
                 let pointsLayer = map.addLayer(name: "Points", source: pointsFC)
+                
                 // Set layer style
+                pointsLayer?.styleName = "pointsLayer"
                 if let style = pointsLayer?.style {
                     _ = style.set(string: uiColorToHexString(
-                        color: UIColor(red: 0.0, green: 0.0, blue: 1.0,
+                        color: UIColor(red: 0.0, green: 0.8, blue: 0.545,
                                        alpha: 1.0)), for: "color")
                     
                     _ = style.set(double: 5.0, for: "size")
+                    _ = style.set(int: 4, for: "type")
                     
                    pointsLayer!.style = style
+                }
+                
+                if pointsLayer != nil {
+                    map.reorder(before: osmLayer, moved: pointsLayer)
+                    _ = map.save()
                 }
             }
         }
@@ -150,6 +177,45 @@ class ViewController: UIViewController, GestureDelegate {
     @IBAction func onZoomOut(_ sender: UIButton) {
         mapView.zoomOut()
     }
+    
+    @IBAction func onDownload(_ sender: UIButton) {
+        sender.isEnabled = false
+        let sessionConfig = URLSessionConfiguration.default
+        let session = URLSession(configuration: sessionConfig)
+        let request = try! URLRequest(url: URL(string: pointsURL)!)
+        
+        let fileManager = FileManager.default
+        var appSupportDir = fileManager.urls(for: .applicationSupportDirectory,
+                                             in: .userDomainMask)[0]
+        appSupportDir = appSupportDir.appendingPathComponent("ngstore", isDirectory: true)
+        appSupportDir = appSupportDir.appendingPathComponent("geodata", isDirectory: true)
+        let localUrl = appSupportDir.appendingPathComponent("store.ngst")
+        
+        
+        let task = session.downloadTask(with: request) { (tempLocalUrl, response, error) in
+            if let tempLocalUrl = tempLocalUrl, error == nil {
+                // Success
+                if let statusCode = (response as? HTTPURLResponse)?.statusCode {
+                    print("Success: \(statusCode)")
+                }
+                
+                do {
+                    print("Try to move from \(tempLocalUrl) to \(localUrl)")
+                    try fileManager.moveItem(at: tempLocalUrl, to: localUrl)
+                    self.addPoints(to: self.map!)
+                    self.mapView.refresh(normal: true)
+                    sender.isHidden = true
+                } catch (let writeError) {
+                    print("error writing file \(localUrl) : \(writeError)")
+                }
+                
+            } else {
+                print("Failure: %@", error?.localizedDescription ?? "unknown");
+            }
+        }
+        task.resume()
+    }
+    
 
 }
 

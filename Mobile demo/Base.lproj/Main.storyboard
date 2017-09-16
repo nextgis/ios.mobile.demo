@@ -47,12 +47,26 @@
                                             <action selector="onZoomOut:" destination="BYZ-38-t0r" eventType="touchUpInside" id="g36-L0-1TY"/>
                                         </connections>
                                     </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gyC-UU-GW7" userLabel="1M">
+                                        <rect key="frame" x="8" y="447" width="304" height="49"/>
+                                        <color key="backgroundColor" red="0.92549019610000005" green="0.96078431369999995" blue="0.96862745100000003" alpha="1" colorSpace="calibratedRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="49" id="2kl-LU-FDV"/>
+                                        </constraints>
+                                        <state key="normal" title="Get points"/>
+                                        <connections>
+                                            <action selector="onDownload:" destination="BYZ-38-t0r" eventType="touchUpInside" id="eyV-Mu-N8K"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <constraints>
+                                    <constraint firstItem="gyC-UU-GW7" firstAttribute="bottom" secondItem="0yC-v6-E7c" secondAttribute="bottomMargin" id="55A-gx-3vm"/>
                                     <constraint firstItem="95n-Cr-m7D" firstAttribute="centerY" secondItem="0yC-v6-E7c" secondAttribute="centerY" constant="-36" id="8IT-Si-Uon"/>
                                     <constraint firstAttribute="trailingMargin" secondItem="UOZ-1R-iql" secondAttribute="trailing" id="8RH-10-ktp"/>
+                                    <constraint firstItem="gyC-UU-GW7" firstAttribute="leading" secondItem="0yC-v6-E7c" secondAttribute="leadingMargin" id="KkL-cB-LS3"/>
                                     <constraint firstItem="UOZ-1R-iql" firstAttribute="centerY" secondItem="0yC-v6-E7c" secondAttribute="centerY" constant="36" id="WWX-mP-lHv"/>
                                     <constraint firstAttribute="trailingMargin" secondItem="95n-Cr-m7D" secondAttribute="trailing" id="Ytn-KE-1at"/>
+                                    <constraint firstAttribute="trailingMargin" secondItem="gyC-UU-GW7" secondAttribute="trailing" id="dtE-sU-Td2"/>
                                 </constraints>
                             </glkView>
                         </subviews>
@@ -60,11 +74,11 @@
                         <constraints>
                             <constraint firstItem="0yC-v6-E7c" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="0QS-vz-5gF"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="0yC-v6-E7c" secondAttribute="bottom" id="3TF-eE-r4W"/>
-                            <constraint firstItem="0yC-v6-E7c" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="-16" id="HDJ-0q-5ef"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="0yC-v6-E7c" secondAttribute="trailing" constant="-16" id="qR6-xe-Ge6"/>
+                            <constraint firstItem="0yC-v6-E7c" firstAttribute="left" secondItem="8bC-Xf-vdC" secondAttribute="left" id="HDJ-0q-5ef"/>
+                            <constraint firstAttribute="right" secondItem="0yC-v6-E7c" secondAttribute="right" id="qR6-xe-Ge6"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="NextGIS Demo" id="uV2-7I-wz1">
+                    <navigationItem key="navigationItem" title="NextGIS Mobile for iOS" id="uV2-7I-wz1">
                         <barButtonItem key="rightBarButtonItem" title="Info" id="xpg-XI-Y4F">
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
@@ -73,6 +87,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="downloadBtn" destination="gyC-UU-GW7" id="4kO-9i-JWc"/>
                         <outlet property="mapView" destination="0yC-v6-E7c" id="dHn-vW-Bl4"/>
                     </connections>
                 </viewController>
