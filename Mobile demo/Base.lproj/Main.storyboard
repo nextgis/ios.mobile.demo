@@ -58,8 +58,16 @@
                                             <action selector="onDownload:" destination="BYZ-38-t0r" eventType="touchUpInside" id="eyV-Mu-N8K"/>
                                         </connections>
                                     </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MHH-P8-KOT">
+                                        <rect key="frame" x="28" y="8" width="264" height="24"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                 </subviews>
                                 <constraints>
+                                    <constraint firstItem="MHH-P8-KOT" firstAttribute="leading" secondItem="0yC-v6-E7c" secondAttribute="leading" constant="28" id="0AI-Tt-uzo"/>
                                     <constraint firstItem="gyC-UU-GW7" firstAttribute="bottom" secondItem="0yC-v6-E7c" secondAttribute="bottomMargin" id="55A-gx-3vm"/>
                                     <constraint firstItem="95n-Cr-m7D" firstAttribute="centerY" secondItem="0yC-v6-E7c" secondAttribute="centerY" constant="-36" id="8IT-Si-Uon"/>
                                     <constraint firstAttribute="trailingMargin" secondItem="UOZ-1R-iql" secondAttribute="trailing" id="8RH-10-ktp"/>
@@ -67,6 +75,8 @@
                                     <constraint firstItem="UOZ-1R-iql" firstAttribute="centerY" secondItem="0yC-v6-E7c" secondAttribute="centerY" constant="36" id="WWX-mP-lHv"/>
                                     <constraint firstAttribute="trailingMargin" secondItem="95n-Cr-m7D" secondAttribute="trailing" id="Ytn-KE-1at"/>
                                     <constraint firstAttribute="trailingMargin" secondItem="gyC-UU-GW7" secondAttribute="trailing" id="dtE-sU-Td2"/>
+                                    <constraint firstItem="MHH-P8-KOT" firstAttribute="top" secondItem="0yC-v6-E7c" secondAttribute="top" constant="8" id="jFA-x8-Dro"/>
+                                    <constraint firstAttribute="trailing" secondItem="MHH-P8-KOT" secondAttribute="trailing" constant="28" id="ycO-fX-t5p"/>
                                 </constraints>
                             </glkView>
                         </subviews>
@@ -88,6 +98,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="downloadBtn" destination="gyC-UU-GW7" id="4kO-9i-JWc"/>
+                        <outlet property="featureCountLabel" destination="MHH-P8-KOT" id="Zo7-S2-oZC"/>
                         <outlet property="mapView" destination="0yC-v6-E7c" id="dHn-vW-Bl4"/>
                     </connections>
                 </viewController>

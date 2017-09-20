@@ -9,14 +9,17 @@
 import UIKit
 import ngmaplib
 
-class ViewController: UIViewController, GestureDelegate {
+class ViewController: UIViewController, GestureDelegate, URLSessionDownloadDelegate, MapViewDelegate {
     
     // MARK: Properties
     
+    @IBOutlet weak var featureCountLabel: UILabel!
     @IBOutlet weak var mapView: MapView!
     @IBOutlet weak var downloadBtn: UIButton!
     let pointsURL = "https://nextgis.com/data/examples/store.ngst"
     weak var map: Map?
+    var pointsFC: FeatureClass? = nil
+    weak var globalTimer: Timer? = nil
     
     // MARK: Overrides
 
@@ -27,9 +30,9 @@ class ViewController: UIViewController, GestureDelegate {
         if let map = API.instance.getMap("main") {
             
             let memSizeMb = ProcessInfo.processInfo.physicalMemory / 1048576
-            var reduceFactor = 1.0
+            var reduceFactor = 1.3
             if memSizeMb < 1024 {
-                reduceFactor = 1.5
+                reduceFactor = 2.7
             }
         
             let options = [
@@ -56,6 +59,7 @@ class ViewController: UIViewController, GestureDelegate {
         
             mapView.setMap(map: map)
             mapView.registerGestureRecognizers(self)
+            mapView.registerView(self)
             
             self.map = map
         }
@@ -74,19 +78,15 @@ class ViewController: UIViewController, GestureDelegate {
     }
     
     func onSingleTap(sender: UIGestureRecognizer) {
-        
     }
     
     func onDoubleTap(sender: UIGestureRecognizer) {
-        
     }
     
     func onPanGesture(sender: UIPanGestureRecognizer) {
-        
     }
     
     func onPinchGesture(sender: UIPinchGestureRecognizer) {
-        
     }
 
     
@@ -115,31 +115,72 @@ class ViewController: UIViewController, GestureDelegate {
             // We expected datastore has points feature class
             if let pointsFC = dataStore.child(name: "points") {
                 // Get OSM Layer
-                let osmLayer = map.getLayer(position: 0)
+                let osmLayer = map.getLayer(by: 0)
                 
                 // Create layer from points feature class
-                let pointsLayer = map.addLayer(name: "Points", source: pointsFC)
+                if let pointsLayer = map.addLayer(name: "Points", source: pointsFC) {
                 
-                // Set layer style
-                pointsLayer?.styleName = "pointsLayer"
-                if let style = pointsLayer?.style {
+                    // Set layer style
+                    pointsLayer.styleName = "pointsLayer"
+                    let style = pointsLayer.style
                     _ = style.set(string: uiColorToHexString(
-                        color: UIColor(red: 0.0, green: 0.8, blue: 0.545,
-                                       alpha: 1.0)), for: "color")
+                                  color: UIColor(red: 0.0, green: 0.8, blue: 0.545,
+                                                 alpha: 1.0)), for: "color")
                     
                     _ = style.set(double: 5.0, for: "size")
                     _ = style.set(int: 4, for: "type")
                     
-                   pointsLayer!.style = style
-                }
+                    pointsLayer.style = style
                 
-                if pointsLayer != nil {
                     map.reorder(before: osmLayer, moved: pointsLayer)
                     _ = map.save()
                 }
             }
         }
     }
+    
+    func getPointsFeatureClass() -> FeatureClass? {
+        return map?.getLayer(by: 0)?.dataSource as? FeatureClass
+    }
+    
+    func updateFeatureCountLabel() {
+        if let fc = getPointsFeatureClass() {
+            let queue = DispatchQueue.global(qos: .utility)
+            queue.async{
+                let extent = self.mapView.getExtent(srs: 3857)
+                _ = fc.setSpatialFilter(envelope: extent)
+                let count = fc.count
+                //_ = fc.clearFilters()
+            
+                let formatter = NumberFormatter()
+                formatter.groupingSeparator = " "
+                formatter.numberStyle = .decimal
+                let formatStr = formatter.string(for: count) ?? "0"
+                DispatchQueue.main.async {
+                    self.featureCountLabel.text = "\(formatStr) features"
+                }
+            }
+        }
+    }
+    
+    func onTimer(timer: Timer) {
+        updateFeatureCountLabel()
+        globalTimer = nil
+    }
+    
+    func scheduleUpdateLabel() {
+        
+        if globalTimer != nil {
+            return
+        }
+        
+        globalTimer = Timer.scheduledTimer(timeInterval: 2.95,
+                                           target: self,
+                                           selector: #selector(onTimer(timer:)),
+                                           userInfo: nil,
+                                           repeats: false)
+    }
+
 
     // MARK: Actions
     
@@ -181,9 +222,30 @@ class ViewController: UIViewController, GestureDelegate {
     @IBAction func onDownload(_ sender: UIButton) {
         sender.isEnabled = false
         let sessionConfig = URLSessionConfiguration.default
-        let session = URLSession(configuration: sessionConfig)
+        let session = URLSession(configuration: sessionConfig, delegate: self,
+                                 delegateQueue: OperationQueue.main)
         let request = try! URLRequest(url: URL(string: pointsURL)!)
         
+        let task = session.downloadTask(with: request)
+        task.resume()
+    }
+    
+    var progress: Float = 0.0
+    
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+        if totalBytesExpectedToWrite > 0 {
+            let currentProgress = Float(totalBytesWritten) / Float(totalBytesExpectedToWrite) * 100
+            debugPrint("Progress \(downloadTask) \(currentProgress)")
+            if currentProgress - progress > 0.25 {
+                progress = currentProgress
+                let progressStr = String(format: "%.1f", progress)
+                downloadBtn.setTitle("Get points: \(progressStr)%", for: .disabled)
+            }
+        }
+    }
+    
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        debugPrint("Download finished: \(location)")
         let fileManager = FileManager.default
         var appSupportDir = fileManager.urls(for: .applicationSupportDirectory,
                                              in: .userDomainMask)[0]
@@ -191,31 +253,29 @@ class ViewController: UIViewController, GestureDelegate {
         appSupportDir = appSupportDir.appendingPathComponent("geodata", isDirectory: true)
         let localUrl = appSupportDir.appendingPathComponent("store.ngst")
         
-        
-        let task = session.downloadTask(with: request) { (tempLocalUrl, response, error) in
-            if let tempLocalUrl = tempLocalUrl, error == nil {
-                // Success
-                if let statusCode = (response as? HTTPURLResponse)?.statusCode {
-                    print("Success: \(statusCode)")
-                }
-                
-                do {
-                    print("Try to move from \(tempLocalUrl) to \(localUrl)")
-                    try fileManager.moveItem(at: tempLocalUrl, to: localUrl)
-                    self.addPoints(to: self.map!)
-                    self.mapView.refresh(normal: true)
-                    sender.isHidden = true
-                } catch (let writeError) {
-                    print("error writing file \(localUrl) : \(writeError)")
-                }
-                
-            } else {
-                print("Failure: %@", error?.localizedDescription ?? "unknown");
-            }
+        do {
+            try fileManager.removeItem(at: localUrl)
+        } catch( _) {
+            
         }
-        task.resume()
+            
+        do {
+            debugPrint("Try to move from \(location) to \(localUrl)")
+            try fileManager.moveItem(at: location, to: localUrl)
+            self.addPoints(to: self.map!)
+            self.mapView.refresh(normal: true)
+            downloadBtn.isHidden = true
+        } catch (let writeError) {
+            debugPrint("error writing file \(localUrl) : \(writeError)")
+        }
     }
     
-
+    func onMapDrawFinished() {
+        scheduleUpdateLabel()
+    }
+    
+    func onMapDraw(percent: Double) {
+        
+    }
 }
 
